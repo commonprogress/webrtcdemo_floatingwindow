@@ -40,4 +40,5 @@ dependencies {
     implementation build_dependency["android_constraint_layout"]
     // android官方 dependency end
     api project(':pine_rtc')
+    api project(':floatingwindow')
 }

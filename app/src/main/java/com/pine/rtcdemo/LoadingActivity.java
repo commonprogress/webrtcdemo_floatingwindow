@@ -7,14 +7,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.dongxl.fw.FloatingWindowUtils;
 import com.pine.rtc.org.component.ConnectActivity;
 
 public class LoadingActivity extends Activity {
     private final static int PERMISSIONS_REQUEST_CODE = 1;
+    private final static int FLOATINGWINDOW_REQUEST_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,16 @@ public class LoadingActivity extends Activity {
         setContentView(R.layout.activity_loading);
 
         requestPermission();
+        checkFloatPermission();
+    }
+
+    private void checkFloatPermission() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                FloatingWindowUtils.applyFloatPermission(LoadingActivity.this, FLOATINGWINDOW_REQUEST_CODE);
+            }
+        }, 1500);
     }
 
     private void requestPermission() {
