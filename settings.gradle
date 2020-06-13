@@ -1,0 +1,3 @@
+//https://github.com/thfhongfeng/PineAppRtc
+rootProject.name='webrtcdemo_floatingwindow'
+include ':app', ':pine_rtc'
