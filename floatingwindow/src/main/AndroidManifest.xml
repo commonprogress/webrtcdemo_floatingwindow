@@ -1,5 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.dongxl.fw">
+
     <!-- 要获取CompatModeWrapper，首先得在应用程序的AndroidManifest.xml文件中添加权限 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <application>
+        <service
+            android:name=".services.TestKotlinBindService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
+            android:name=".services.TestServiceBindService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".services.FloatingImageService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".services.FloatingButtonService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".services.FloatingVideoService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".FloatWindowActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+    </application>
+
 </manifest>

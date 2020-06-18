@@ -7,15 +7,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.dongxl.fw.FloatingWindowUtils;
-import com.pine.rtc.org.component.ConnectActivity;
+import com.dongxl.fw.FloatWindowActivity;
+
+import java.util.Arrays;
 
 public class LoadingActivity extends Activity {
+    private final static String TAG = LoadingActivity.class.getSimpleName();
     private final static int PERMISSIONS_REQUEST_CODE = 1;
     private final static int FLOATINGWINDOW_REQUEST_CODE = 2;
 
@@ -29,12 +31,14 @@ public class LoadingActivity extends Activity {
     }
 
     private void checkFloatPermission() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FloatingWindowUtils.applyFloatPermission(LoadingActivity.this, FLOATINGWINDOW_REQUEST_CODE);
-            }
-        }, 1500);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                FloatingWindowUtils.applyFloatPermission(LoadingActivity.this, FLOATINGWINDOW_REQUEST_CODE);
+//            }
+//        }, 1500);
+
+        startActivity(new Intent(this, FloatWindowActivity.class));
     }
 
     private void requestPermission() {
@@ -56,14 +60,27 @@ public class LoadingActivity extends Activity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult requestCode:" + requestCode + ",resultCode:" + resultCode);
+        switch (requestCode) {
+            case FLOATINGWINDOW_REQUEST_CODE: {
+
+                return;
+            }
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        Log.i(TAG, "onRequestPermissionsResult requestCode:" + requestCode + ",permissions[]:" + Arrays.toString(permissions) + ",grantResults[]:" + Arrays.toString(grantResults));
         switch (requestCode) {
             case PERMISSIONS_REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    startActivity(new Intent(this, ConnectActivity.class));
+//                    startActivity(new Intent(this, ConnectActivity.class));
                     finish();
                 } else {
                     showWaringDialog();
