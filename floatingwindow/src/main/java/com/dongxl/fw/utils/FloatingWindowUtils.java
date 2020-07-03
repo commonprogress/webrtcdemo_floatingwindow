@@ -10,6 +10,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.fragment.app.Fragment;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -152,10 +154,10 @@ public class FloatingWindowUtils {
      * @param activity
      * @param requestCode
      */
-    public static void applyFloatPermission(Activity activity, int requestCode) {
+    public static boolean applyFloatPermission(Activity activity, int requestCode) {
         try {
-            if (checkFloatPermission(activity)) {
-                return;
+            if (null == activity || activity.isFinishing() || activity.isDestroyed() || checkFloatPermission(activity)) {
+                return false;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0以上
                 //            第一种：会进入到悬浮窗权限应用列表
@@ -166,20 +168,68 @@ public class FloatingWindowUtils {
                 intent.setData(Uri.parse("package:" + activity.getPackageName()));
 
                 activity.startActivityForResult(intent, requestCode);
+                return true;
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//6.0-8.0
                 //            第二种：直接进入到自己应用的悬浮窗权限开启界面
                 //            使用以下代码，则不会到上述所说的应用列表，而是直接进入到自己应用的悬浮窗权限开启界面
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                 intent.setData(Uri.parse("package:" + activity.getPackageName()));
                 activity.startActivityForResult(intent, requestCode);
+                return true;
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {//4.4-6.0
                 //无需处理了
+                return false;
             } else {//4.4以下
-
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "applyFloatPermission Exception:" + e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    /**
+     * AppOpsManager.MODE_ALLOWED —— 表示授予了权限并且重新打开了应用程序
+     * AppOpsManager.MODE_IGNORED —— 表示授予权限并返回应用程序
+     * AppOpsManager.MODE_ERRORED —— 表示当前应用没有此权限
+     * AppOpsManager.MODE_DEFAULT —— 表示默认值，有些手机在没有开启权限时，mode的值就是这个
+     *
+     * @param fragment
+     * @param requestCode
+     */
+    public static boolean applyFloatPermission(Fragment fragment, int requestCode) {
+        try {
+            if (null == fragment || !fragment.isAdded() || checkFloatPermission(fragment.getContext())) {
+                return false;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0以上
+                //            第一种：会进入到悬浮窗权限应用列表
+                //            使用以下代码，会进入到悬浮窗权限的列表，列表中是手机中需要悬浮窗权限的应用列表，你需要在此列表中找到自己的应用，然后点进去，才可以打开悬浮窗权限
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+
+                //添加这行跳转指定应用，不添加跳转到应用列表，需要用户自己选择。网上有说加上这行华为手机有问题
+                intent.setData(Uri.parse("package:" + fragment.getContext().getPackageName()));
+
+                fragment.startActivityForResult(intent, requestCode);
+                return true;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//6.0-8.0
+                //            第二种：直接进入到自己应用的悬浮窗权限开启界面
+                //            使用以下代码，则不会到上述所说的应用列表，而是直接进入到自己应用的悬浮窗权限开启界面
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + fragment.getContext().getPackageName()));
+                fragment.startActivityForResult(intent, requestCode);
+                return true;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {//4.4-6.0
+                //无需处理了
+                return false;
+            } else {//4.4以下
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "applyFloatPermission Exception:" + e.getLocalizedMessage());
+            return false;
         }
     }
 }
